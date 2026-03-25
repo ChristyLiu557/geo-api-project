@@ -1,6 +1,7 @@
 import pytest
 
 import data.people as ppl
+from unittest.mock import patch
 
 from data.roles import TEST_CODE as TEST_ROLE_CODE
 
@@ -149,3 +150,20 @@ def test_create_bad_email():
 def test_get_masthead():
     mh = ppl.get_masthead()
     assert isinstance(mh, dict)
+
+@pytest.mark.skip(reason="example of skipped test for fancier testing")
+def test_skip_example():
+    assert False
+
+@patch("data.people.read")
+def test_patch_read(mock_read):
+    mock_read.return_value = {
+        "mock@nyu.edu": {
+            ppl.NAME: "Mock User",
+            ppl.AFFILIATION: "NYU",
+            ppl.EMAIL: "mock@nyu.edu",
+            ppl.ROLES: ["AU"]
+        }
+    }
+    people = ppl.read()
+    assert "mock@nyu.edu" in people

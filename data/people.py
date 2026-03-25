@@ -62,41 +62,64 @@ def delete(email: str):
 
 
 def is_valid_person(name: str, affiliation: str, email: str,
-                    role: str = None, roles: list = None) -> bool:
+                    role: str = None, roles=None) -> bool:
     if not is_valid_email(email):
         raise ValueError(f'Invalid email: {email}')
-    if role:
-        if not rls.is_valid(role):
-            raise ValueError(f'Invalid role: {role}')
-    elif roles:
-        for role in roles:
-            if not rls.is_valid(role):
-                raise ValueError(f'Invalid role: {role}')
+
+    role_list = []
+
+    if role is not None:
+        role_list = [role]
+    elif roles is not None:
+        if isinstance(roles, str):
+            role_list = [roles]
+        else:
+            role_list = roles
+
+    for one_role in role_list:
+        if not rls.is_valid(one_role):
+            raise ValueError(f'Invalid role: {one_role}')
+
     return True
 
 
-def create(name: str, affiliation: str, email: str, role: str):
+def create(name: str, affiliation: str, email: str, roles):
     if exists(email):
         raise ValueError(f'Adding duplicate {email=}')
-    if is_valid_person(name, affiliation, email, role=role):
-        roles = []
-        if role:
-            roles.append(role)
-        person = {NAME: name, AFFILIATION: affiliation,
-                  EMAIL: email, ROLES: roles}
+
+    if isinstance(roles, str):
+        roles = [roles]
+
+    if is_valid_person(name, affiliation, email, roles=roles):
+        person = {
+            NAME: name,
+            AFFILIATION: affiliation,
+            EMAIL: email,
+            ROLES: roles
+        }
         print(person)
         dbc.create(PEOPLE_COLLECT, person)
         return email
 
 
-def update(name: str, affiliation: str, email: str, roles: list):
+def update(name: str, affiliation: str, email: str, roles):
     if not exists(email):
         raise ValueError(f'Updating non-existent person: {email=}')
+
+    if isinstance(roles, str):
+        roles = [roles]
+
     if is_valid_person(name, affiliation, email, roles=roles):
-        ret = dbc.update(PEOPLE_COLLECT,
-                         {EMAIL: email},
-                         {NAME: name, AFFILIATION: affiliation,
-                          EMAIL: email, ROLES: roles})
+        ret = dbc.update(
+            PEOPLE_COLLECT,
+            {EMAIL: email},
+            {
+                NAME: name,
+                AFFILIATION: affiliation,
+                EMAIL: email,
+                ROLES: roles
+            }
+        )
         print(f'{ret=}')
         return email
 
