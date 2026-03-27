@@ -1,11 +1,13 @@
+import data.db_connect as dbc
+
 ACTION = 'action'
 AUTHOR = 'author'
 CURR_STATE = 'curr_state'
 DISP_NAME = 'disp_name'
-MANU_ID = '_id'
+TITLE = 'title'
+MANU_ID = TITLE
 REFEREE = 'referee'
 REFEREES = 'referees'
-TITLE = 'title'
 
 TEST_ID = 'fake_id'
 TEST_FLD_NM = TITLE
@@ -90,8 +92,7 @@ def delete_ref(manu: dict, referee: str) -> str:
         manu[REFEREES].remove(referee)
     if len(manu[REFEREES]) > 0:
         return IN_REF_REV
-    else:
-        return SUBMITTED
+    return SUBMITTED
 
 
 FUNC = 'f'
@@ -154,17 +155,36 @@ def handle_action(manu_id, curr_state, action, **kwargs) -> str:
     return STATE_TABLE[curr_state][action][FUNC](**kwargs)
 
 
-def main():
-    print(handle_action(TEST_ID, SUBMITTED, ASSIGN_REF, ref='Jack'))
-    print(handle_action(TEST_ID, IN_REF_REV, ASSIGN_REF,
-                        ref='Jill', extra='Extra!'))
-    print(handle_action(TEST_ID, IN_REF_REV, DELETE_REF,
-                        ref='Jill'))
-    print(handle_action(TEST_ID, IN_REF_REV, DELETE_REF,
-                        ref='Jack'))
-    print(handle_action(TEST_ID, SUBMITTED, WITHDRAW))
-    print(handle_action(TEST_ID, SUBMITTED, REJECT))
+MANU_COLLECT = 'manuscripts'
 
 
-if __name__ == '__main__':
-    main()
+def read() -> dict:
+    manus = dbc.read_dict(MANU_COLLECT, MANU_ID)
+    return manus
+
+
+def read_one(manu_id: str) -> dict:
+    return dbc.read_one(MANU_COLLECT, {MANU_ID: manu_id})
+
+
+def create(title: str, author: str):
+    manu = {
+        TITLE: title,
+        AUTHOR: author,
+        REFEREES: [],
+        CURR_STATE: SUBMITTED
+    }
+    dbc.create(MANU_COLLECT, manu)
+    return title
+
+
+def delete(manu_id: str):
+    return dbc.delete(MANU_COLLECT, {MANU_ID: manu_id})
+
+
+def update(manu_id: str, new_state: str):
+    return dbc.update(
+        MANU_COLLECT,
+        {MANU_ID: manu_id},
+        {CURR_STATE: new_state}
+    )

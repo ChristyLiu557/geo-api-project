@@ -46,6 +46,7 @@ class HelloWorld(Resource):
     The purpose of the HelloWorld class is to have a simple test to see if the
     app is working at all.
     """
+
     def get(self):
         """
         A trivial endpoint to see if the server is running.
@@ -59,6 +60,7 @@ class Endpoints(Resource):
     This class will serve as live, fetchable documentation of what endpoints
     are available in the system.
     """
+
     def get(self):
         """
         The `get()` method will return a sorted list of available endpoints.
@@ -73,6 +75,7 @@ class JournalTitle(Resource):
     This class handles creating, reading, updating
     and deleting the journal title.
     """
+
     def get(self):
         """
         Retrieve the journal title.
@@ -90,6 +93,7 @@ class Roles(Resource):
     """
     This class handles reading person roles.
     """
+
     def get(self):
         """
         Retrieve the journal person roles.
@@ -103,6 +107,7 @@ class People(Resource):
     This class handles creating, reading, updating
     and deleting journal people.
     """
+
     def get(self):
         """
         Retrieve the journal people.
@@ -119,6 +124,7 @@ class Person(Resource):
     This class handles creating, reading, updating
     and deleting journal people.
     """
+
     def get(self, email, user_id):
         """
         Retrieve a journal person.
@@ -157,6 +163,7 @@ class PeopleCreate(Resource):
     """
     Add a person to the journal db.
     """
+
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
     @api.expect(PEOPLE_CREATE_FLDS)
@@ -179,6 +186,33 @@ class PeopleCreate(Resource):
         }
 
 
+@api.route(f'{PEOPLE_EP}/update')
+class PeopleUpdate(Resource):
+    """
+    Update a person in the journal db.
+    """
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(PEOPLE_CREATE_FLDS)
+    def put(self):
+        """
+        Update a person.
+        """
+        try:
+            name = request.json.get(ppl.NAME)
+            affiliation = request.json.get(ppl.AFFILIATION)
+            email = request.json.get(ppl.EMAIL)
+            roles = request.json.get(ppl.ROLES)
+            ret = ppl.update(name, affiliation, email, roles)
+        except Exception as err:
+            raise wz.NotAcceptable(f'Could not update person: {err=}')
+        return {
+            MESSAGE: 'Person updated!',
+            RETURN: ret,
+        }
+
+
 MASTHEAD = 'Masthead'
 
 
@@ -187,8 +221,22 @@ class Masthead(Resource):
     """
     Get a journal's masthead.
     """
+
     def get(self):
         return {MASTHEAD: ppl.get_masthead()}
+
+
+@api.route(MANU_EP)
+class Manuscripts(Resource):
+    """
+    Read all manuscripts.
+    """
+
+    def get(self):
+        """
+        Retrieve all manuscripts.
+        """
+        return manu.read()
 
 
 MANU_ACTION_FLDS = api.model('ManuscriptAction', {
@@ -204,6 +252,7 @@ class ReceiveAction(Resource):
     """
     Receive an action for a manuscript.
     """
+
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
     @api.expect(MANU_ACTION_FLDS)
@@ -225,3 +274,100 @@ class ReceiveAction(Resource):
             MESSAGE: 'Action received!',
             RETURN: ret,
         }
+
+
+@api.route(f'{MANU_EP}/<string:manu_id>')
+class Manuscript(Resource):
+    """
+    Get one manuscript.
+    """
+
+    def get(self, manu_id):
+        manu_rec = manu.read_one(manu_id)
+        if not manu_rec:
+            raise wz.NotFound("No such manuscript.")
+        return manu_rec
+
+
+MANU_CREATE_FLDS = api.model('AddNewManuscript', {
+    manu.TITLE: fields.String,
+    manu.AUTHOR: fields.String,
+})
+
+
+@api.route(f'{MANU_EP}/create')
+class ManuscriptCreate(Resource):
+    """
+    Create a manuscript.
+    """
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(MANU_CREATE_FLDS)
+    def post(self):
+        """
+        Add a manuscript.
+        """
+        try:
+            title = request.json.get(manu.TITLE)
+            author = request.json.get(manu.AUTHOR)
+            ret = manu.create(title, author)
+        except Exception as err:
+            raise wz.NotAcceptable(f'Could not add manuscript: {err=}')
+        return {
+            MESSAGE: 'Manuscript added!',
+            RETURN: ret,
+        }
+
+
+@api.route(f'{MANU_EP}/delete/<string:manu_id>')
+class ManuscriptDelete(Resource):
+    """
+    Delete a manuscript.
+    """
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'No such manuscript')
+    def delete(self, manu_id):
+        ret = manu.delete(manu_id)
+        if ret == 0:
+            raise wz.NotFound('No such manuscript.')
+        return {
+            MESSAGE: 'Manuscript deleted!',
+            RETURN: manu_id,
+        }
+
+
+MANU_UPDATE_FLDS = api.model('UpdateManuscript', {
+    'manu_id': fields.String,
+    'new_state': fields.String,
+})
+
+
+@api.route(f'{MANU_EP}/update')
+class ManuscriptUpdate(Resource):
+    """
+    Update manuscript state.
+    """
+
+    @api.response(HTTPStatus.OK, 'Success')
+    @api.response(HTTPStatus.NOT_FOUND, 'No such manuscript')
+    @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
+    @api.expect(MANU_UPDATE_FLDS)
+    def put(self):
+        try:
+            manu_id = request.json.get('manu_id')
+            new_state = request.json.get('new_state')
+
+            ret = manu.update(manu_id, new_state)
+
+            if ret == 0:
+                raise wz.NotFound('No such manuscript.')
+
+            return {
+                MESSAGE: 'Manuscript updated!',
+                RETURN: manu_id,
+            }
+
+        except Exception as err:
+            raise wz.NotAcceptable(f'Could not update manuscript: {err}')
