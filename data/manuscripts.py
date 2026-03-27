@@ -1,13 +1,14 @@
+import uuid
 import data.db_connect as dbc
 
 ACTION = 'action'
 AUTHOR = 'author'
 CURR_STATE = 'curr_state'
 DISP_NAME = 'disp_name'
-TITLE = 'title'
-MANU_ID = TITLE
+MANU_ID = 'manu_id'
 REFEREE = 'referee'
 REFEREES = 'referees'
+TITLE = 'title'
 
 TEST_ID = 'fake_id'
 TEST_FLD_NM = TITLE
@@ -61,7 +62,6 @@ DELETE_REF = 'DRF'
 DONE = 'DON'
 REJECT = 'REJ'
 WITHDRAW = 'WIT'
-# for testing:
 TEST_ACTION = ACCEPT
 
 VALID_ACTIONS = [
@@ -168,14 +168,16 @@ def read_one(manu_id: str) -> dict:
 
 
 def create(title: str, author: str):
+    manu_id = str(uuid.uuid4())
     manu = {
+        MANU_ID: manu_id,
         TITLE: title,
         AUTHOR: author,
         REFEREES: [],
         CURR_STATE: SUBMITTED
     }
     dbc.create(MANU_COLLECT, manu)
-    return title
+    return manu_id
 
 
 def delete(manu_id: str):
