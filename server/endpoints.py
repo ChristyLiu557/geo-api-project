@@ -1,6 +1,8 @@
 """
-This is the file containing all of the endpoints for our flask app.
-The endpoint called `endpoints` will return all available endpoints.
+This file extends the original demo by adding more complete API endpoints
+for people and manuscripts. It includes CRUD operations, request validation,
+and integration with the data layer. It also introduces structured input
+models for Swagger and basic authorization checks for certain actions.
 """
 from http import HTTPStatus
 
