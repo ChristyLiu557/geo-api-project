@@ -190,17 +190,10 @@ class PeopleCreate(Resource):
 
 @api.route(f'{PEOPLE_EP}/update')
 class PeopleUpdate(Resource):
-    """
-    Update a person in the journal db.
-    """
-
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
     @api.expect(PEOPLE_CREATE_FLDS)
     def put(self):
-        """
-        Update a person.
-        """
         try:
             name = request.json.get(ppl.NAME)
             affiliation = request.json.get(ppl.AFFILIATION)
@@ -220,24 +213,14 @@ MASTHEAD = 'Masthead'
 
 @api.route(f'{PEOPLE_EP}/masthead')
 class Masthead(Resource):
-    """
-    Get a journal's masthead.
-    """
-
     def get(self):
         return {MASTHEAD: ppl.get_masthead()}
 
 
 @api.route(MANU_EP)
 class Manuscripts(Resource):
-    """
-    Read all manuscripts.
-    """
-
     def get(self):
-        """
-        Retrieve all manuscripts.
-        """
+
         return manu.read()
 
 
@@ -251,17 +234,11 @@ MANU_ACTION_FLDS = api.model('ManuscriptAction', {
 
 @api.route(f'{MANU_EP}/receive_action')
 class ReceiveAction(Resource):
-    """
-    Receive an action for a manuscript.
-    """
 
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
     @api.expect(MANU_ACTION_FLDS)
     def put(self):
-        """
-        Receive an action for a manuscript.
-        """
         try:
             print(request.json)
             manu_id = request.json.get(manu.MANU_ID)
@@ -280,9 +257,6 @@ class ReceiveAction(Resource):
 
 @api.route(f'{MANU_EP}/<string:manu_id>')
 class Manuscript(Resource):
-    """
-    Get one manuscript.
-    """
 
     def get(self, manu_id):
         manu_rec = manu.read_one(manu_id)
@@ -299,17 +273,13 @@ MANU_CREATE_FLDS = api.model('AddNewManuscript', {
 
 @api.route(f'{MANU_EP}/create')
 class ManuscriptCreate(Resource):
-    """
-    Create a manuscript.
-    """
+
 
     @api.response(HTTPStatus.OK, 'Success')
     @api.response(HTTPStatus.NOT_ACCEPTABLE, 'Not acceptable')
     @api.expect(MANU_CREATE_FLDS)
     def post(self):
-        """
-        Add a manuscript.
-        """
+
         try:
             title = request.json.get(manu.TITLE)
             author = request.json.get(manu.AUTHOR)
