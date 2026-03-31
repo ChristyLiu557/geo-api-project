@@ -1,5 +1,8 @@
 """
 This module interfaces to our user data.
+More Operations are added:
+   - Implemented create, read, update, and delete functions
+     for managing people records in MongoDB.
 """
 import re
 
