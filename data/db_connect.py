@@ -34,8 +34,10 @@ def connect_db():
                                  + 'to use Mongo in the cloud.')
             print('Connecting to Mongo in the cloud.')
             client = pm.MongoClient(
-                 f'mongodb+srv://ChristyLiu:{password}@cluster1.af3rmqz.mongodb.net/'
-    '?retryWrites=true&w=majority&appName=Cluster1'
+                "mongodb+srv://"
+                f"ChristyLiu:{password}"
+                "@cluster1.af3rmqz.mongodb.net/"
+                "?retryWrites=true&w=majority&appName=Cluster1"
             )
         else:
             print("Connecting to Mongo locally.")
