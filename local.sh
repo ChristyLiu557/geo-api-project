@@ -6,6 +6,8 @@ export PROJ_DIR=$PWD
 # - CLOUD_MONGO=0 → local MongoDB
 # - CLOUD_MONGO=1 → MongoDB Atlas (cloud) 
 export DEBUG=1
+export CLOUD_MONGO=1
+
 
 # run our server locally:
 PYTHONPATH=$(pwd):$PYTHONPATH
