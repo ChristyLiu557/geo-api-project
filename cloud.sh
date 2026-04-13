@@ -4,6 +4,7 @@ export FLASK_ENV=development
 export PROJ_DIR=$PWD
 export DEBUG=1
 export CLOUD_MONGO=1
+export MONGO_PASSWD=TBD
 
 # run our server locally connected to cloud db:
 PYTHONPATH=$(pwd):$PYTHONPATH
