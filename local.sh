@@ -2,6 +2,9 @@
 
 export FLASK_ENV=development
 export PROJ_DIR=$PWD
+#  MongoDB connection mode (local vs cloud) is controlled via environment variables:
+# - CLOUD_MONGO=0 → local MongoDB
+# - CLOUD_MONGO=1 → MongoDB Atlas (cloud) 
 export DEBUG=1
 
 # run our server locally:
