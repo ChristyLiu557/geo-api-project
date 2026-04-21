@@ -3,7 +3,8 @@ This file extends the original demo by adding more complete API endpoints
 for people and manuscripts. It includes CRUD operations, request validation,
 and integration with the data layer. It also introduces structured input
 models for Swagger and basic authorization checks for certain actions.
-adding new endpoints people.count which count the total number of people right now.
+adding new endpoints people.
+count which count the total number of people right now.
 """
 from http import HTTPStatus
 
