@@ -341,3 +341,13 @@ class ManuscriptUpdate(Resource):
 
         except Exception as err:
             raise wz.NotAcceptable(f'Could not update manuscript: {err}')
+
+
+@api.route(f'{PEOPLE_EP}/count')
+class PeopleCount(Resource):
+    """
+    Return total number of people in the journal db.
+    """
+
+    def get(self):
+        return {'count': ppl.count()}
