@@ -3,6 +3,7 @@ This module interfaces to our user data.
 More Operations are added:
    - Implemented create, read, update, and delete functions
      for managing people records in MongoDB.
+     Implemented count function for counting people
 """
 import re
 
