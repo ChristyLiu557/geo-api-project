@@ -161,6 +161,10 @@ def get_masthead() -> dict:
     return masthead
 
 
+def count() -> int:
+    return len(read())
+
+
 def main():
     print(get_masthead())
 
