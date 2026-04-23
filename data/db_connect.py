@@ -34,7 +34,8 @@ def connect_db():
         if cloud_mode == CLOUD:
             print('DB_CONNECT: connecting to cloud')
             client = pm.MongoClient(
-                f"mongodb+srv://ChristyLiu:{password}@cluster1.af3rmqz.mongodb.net/?appName=Cluster1",
+                f"mongodb+srv://ChristyLiu:"
+                f"{password}@cluster1.af3rmqz.mongodb.net/?appName=Cluster1",
                 serverSelectionTimeoutMS=5000
             )
             print('DB_CONNECT: about to ping')
