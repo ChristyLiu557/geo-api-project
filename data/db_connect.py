@@ -20,28 +20,30 @@ MONGO_ID = '_id'
 
 
 def connect_db():
-    """
-    This provides a uniform way to connect to the DB across all uses.
-    Returns a mongo client object and also sets the global client.
-    """
     global client
     if client is None:
-        print('Setting client because it is None.')
-        if os.environ.get('CLOUD_MONGO', LOCAL) == CLOUD:
-            password = os.environ.get('MONGO_PASSWD')
-            if not password:
-                raise ValueError('You must set your password '
-                                 + 'to use Mongo in the cloud.')
-            print('Connecting to Mongo in the cloud.')
+        print('DB_CONNECT: starting connect_db')
+        cloud_mode = os.environ.get('CLOUD_MONGO', LOCAL)
+        password = os.environ.get('MONGO_PASSWD')
+
+        print(f'DB_CONNECT: CLOUD_MONGO={cloud_mode}')
+        print(f'DB_CONNECT: password exists? {password is not None}')
+        if password:
+            print(f'DB_CONNECT: password length={len(password)}')
+
+        if cloud_mode == CLOUD:
+            print('DB_CONNECT: connecting to cloud')
             client = pm.MongoClient(
-                "mongodb+srv://"
-                f"ChristyLiu:{password}"
-                "@cluster1.af3rmqz.mongodb.net/"
-                "?retryWrites=true&w=majority&appName=Cluster1"
+                f"mongodb+srv://ChristyLiu:{password}@cluster1.af3rmqz.mongodb.net/?appName=Cluster1",
+                serverSelectionTimeoutMS=5000
             )
+            print('DB_CONNECT: about to ping')
+            print(client.admin.command("ping"))
+            print('DB_CONNECT: ping ok')
         else:
-            print("Connecting to Mongo locally.")
-            client = pm.MongoClient()
+            print('DB_CONNECT: connecting locally')
+            client = pm.MongoClient(serverSelectionTimeoutMS=5000)
+
     return client
 
 

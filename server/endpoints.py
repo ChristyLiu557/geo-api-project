@@ -20,6 +20,8 @@ import data.roles as rls
 
 import security.security as sec
 
+
+
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
@@ -42,6 +44,31 @@ RETURN = 'return'
 TITLE = 'The Journal of API Technology'
 TITLE_EP = '/title'
 TITLE_RESP = 'Title'
+
+import os
+import data.db_connect as dbc
+
+@api.route('/dbping')
+class DbPing(Resource):
+    def get(self):
+        try:
+            client = dbc.connect_db()
+            return {
+                'cloud_mongo': os.environ.get('CLOUD_MONGO'),
+                'password_exists': os.environ.get('MONGO_PASSWD') is not None,
+                'password_len': len(os.environ.get('MONGO_PASSWD', '')),
+                'db_connect_file': dbc.__file__,
+                'ping': client.admin.command('ping'),
+            }
+        except Exception as err:
+            return {
+                'error_type': type(err).__name__,
+                'error': str(err),
+                'db_connect_file': dbc.__file__,
+                'cloud_mongo': os.environ.get('CLOUD_MONGO'),
+                'password_exists': os.environ.get('MONGO_PASSWD') is not None,
+                'password_len': len(os.environ.get('MONGO_PASSWD', '')),
+            }, 500
 
 
 @api.route(HELLO_EP)
