@@ -352,3 +352,24 @@ class PeopleCount(Resource):
 
     def get(self):
         return {'count': ppl.count()}
+
+
+@api.route('/people/by-role/<string:role>')
+class PeopleByRole(Resource):
+    def get(self, role):
+        """
+        Retrieve all people who have the given role.
+        """
+        all_people = ppl.read()
+        results = []
+
+        for person in all_people.values():
+            person_roles = person.get('roles', [])
+            if role in person_roles:
+                results.append(person)
+
+        return {
+            "role": role,
+            "count": len(results),
+            "people": results
+        }
