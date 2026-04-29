@@ -5,7 +5,8 @@ and integration with the data layer. It also introduces structured input
 models for Swagger and basic authorization checks for certain actions.
 adding new endpoints people.
 count which count the total number of people right now.
-get roles which allows user to search how many people and their names in certain role.
+get roles which allows user to search how many people and their names
+in certain role.
 """
 from http import HTTPStatus
 
