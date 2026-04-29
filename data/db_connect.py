@@ -1,6 +1,4 @@
 """
-All interaction with MongoDB should be through this file!
-We may be required to use a new database at any point.
 Supports both local MongoDB and MongoDB Atlas (cloud).
 Connection mode is controlled via CLOUD_MONGO environment variable.
 """
